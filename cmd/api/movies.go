@@ -24,7 +24,7 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 	//If you don’t use a pointer, it will return a json.InvalidUnmarshalError error at runtime.
 	err := app.readJSON(w, r, &input)
 	if err != nil {
-		app.errorResponse(w, r, http.StatusBadRequest, err.Error())
+		app.badRequestResponse(w, r, err)
 		return
 	}
 
