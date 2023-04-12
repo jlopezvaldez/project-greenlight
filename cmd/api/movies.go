@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -9,7 +10,27 @@ import (
 )
 
 func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "create a new movie")
+	//anon struct to hold information expected to be in http request bod
+	//struct is target decode destination
+	var input struct {
+		Title   string   `json:"title"`
+		Year    int32    `json:"year"`
+		Runtime int32    `json:"runtime"`
+		Genres  []string `json:"genres"`
+	}
+
+	// Initialize a new json.Decoder instance which reads from the request body, and
+	// then use the Decode() method to decode the body contents into the input struct.
+	//When calling Decode() you must pass a non-nil pointer as the target decode destination.
+	//If you don’t use a pointer, it will return a json.InvalidUnmarshalError error at runtime.
+	err := json.NewDecoder(r.Body).Decode(&input)
+	if err != nil {
+		app.errorResponse(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	fmt.Fprintln(w, "%+v\n", input)
+
 }
 
 func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request) {
